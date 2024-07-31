@@ -1,8 +1,11 @@
 "use client"
-import { Box, Button, Modal, Stack, TextField, Typography, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import { Box, Button, Modal, Stack, TextField, Typography, ToggleButtonGroup, ToggleButton, InputAdornment } from "@mui/material";
 import { firestore } from "@/firebase";
 import { collection, getDocs, getDoc, query, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SearchIcon from '@mui/icons-material/Search';
 
 export default function Home() {
   // Pantry list
@@ -18,6 +21,7 @@ export default function Home() {
 
   // Adding an item
   const [itemName, setItemName] = useState('')
+  const [itemCount, setItemCount] = useState(1)
 
   // Search 
   const [search, setSearch] = useState('')
@@ -53,12 +57,13 @@ export default function Home() {
     transform: 'translate(-50%, -50%)',
     width: 400,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
+    border: '2px solid #333',
+    borderRadius: '8px',
     boxShadow: 24,
     p: 4,
     display: 'flex',
     flexDirection: 'column',
-    gap: 1.5
+    gap: 2
   };
 
   // Get the pantry data
@@ -91,16 +96,16 @@ export default function Home() {
   }, [toggle]);
 
   // Adding an item to the pantry database
-  const addItem = async (item) => {
+  const addItem = async (item, count) => {
     console.log('Adding item: ', item)
     const docRef = doc(collection(firestore, 'pantry'), item)
     // Check if it exists
     const docSnap = await getDoc(docRef)
     if(docSnap.exists()) {
-      const {count} = docSnap.data()
-      await setDoc(docRef, {count: count + 1})
+      const quantity = docSnap.data().count || 0
+      await setDoc(docRef, {count: Number(quantity) + Number(count)})
     } else {
-      await setDoc(docRef, {count: 1})
+      await setDoc(docRef, {count: count})
     }
     await updatePantry()
   }
@@ -123,13 +128,14 @@ export default function Home() {
   }
 
   return (
-    <Box 
+    <Box
       width="100vw"
       height="100vh"
       display="flex"
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
+      bgcolor="#e5eaf5"
       gap={1.5}
     >
       <Modal 
@@ -146,15 +152,24 @@ export default function Home() {
               label="Item" 
               variant="outlined" 
               autoComplete="off"
-              fullWidth
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
+            />
+            <TextField 
+              id="outlined-basic-count" 
+              label="Quantity" 
+              variant="outlined" 
+              autoComplete="off"
+              type="number"
+              value={itemCount}
+              onChange={(e) => setItemCount(e.target.value)}
             />
             <Button 
               variant="contained" 
               onClick={ () => {
-                addItem(itemName)
+                addItem(itemName, itemCount)
                 setItemName('')
+                setItemCount(1)
                 handleClose()
               }}
             >
@@ -182,6 +197,13 @@ export default function Home() {
           autoComplete="off"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
         />
           <Typography 
             variant="h10"
@@ -196,8 +218,9 @@ export default function Home() {
         </ToggleButtonGroup>
       </Stack>
       </Box>
-      <Box border={'1px solid #333'}>
+      <Box border={'1px solid #333'} borderRadius="50px" height='63vh'>
         <Box sx={{
+          borderRadius: "50px",
           width: '800px',
           height: '100px',
           bgcolor: '#add8e6',
@@ -209,11 +232,12 @@ export default function Home() {
             variant="h2"
             textAlign={'center'}
             color={'#333'}
+            fontFamily='Audrey'
           >
             Pantry Items
           </Typography>
         </Box>
-        <Stack width="800px" height="300px" spacing={2} overflow={'auto'}> 
+        <Stack width="800px" height="300px" spacing={2} overflow={'auto'} alignItems='center'> 
           {loading ? (
             <Box sx={{
               width: "100%",
@@ -224,7 +248,7 @@ export default function Home() {
               alignItems: "center",
           }}
           >
-            <Typography variant={"h3"} textAlign={'center'} color={"blue"}>
+            <Typography variant={"h3"} textAlign={'center'} color={"lightblue"}>
               Loading...
             </Typography>
           </Box>
@@ -234,28 +258,29 @@ export default function Home() {
             <Box
               key={name}
                 sx={{
-                  width: "100%",
-                  minHeight: "150px",
+                  width: "95%",
+                  minHeight: "130px",
                   display: 'flex',
                   flexDirection: { xs: "column", md: "row"},
                   justifyContent: "space-between",
                   alignItems: "center",
                   bgcolor: '#f0f0f0',
+                  borderRadius: "50px",
                   paddingX: 4
                 }}
               >
-                <Typography variant={"h3"} color={'#333'} textAlign={'center'}>
+                <Typography variant={"h4"} color={'#333'} textAlign={'center'} fontFamily='Courier New, Courier, monospace' fontWeight='bold'>
                   {
                     // Capitalize the first letter
                     name.charAt(0).toUpperCase() + name.slice(1)
                   }
                 </Typography>
-                <Typography variant={"h3"} color={'#333'} textAlign={'center'}>
+                <Typography variant={"h4"} color={'#333'} textAlign={'center'} fontFamily='Courier New, Courier, monospace' fontWeight='bold'>
                   Quantity: {count}
                 </Typography>
               <Stack direction="row" spacing={1.5}>
-                <Button variant="contained" onClick={() => addItem(name)}>Add</Button>
-                <Button variant="contained" onClick={() => removeItem(name)}>Remove</Button>
+                <Button variant="contained" onClick={() => addItem(name, 1)} startIcon={<AddIcon />} >Add</Button>
+                <Button variant="contained" onClick={() => removeItem(name)} startIcon={<DeleteIcon />}>Remove</Button>
               </Stack>
             </Box>
             ))
@@ -269,7 +294,7 @@ export default function Home() {
                 alignItems: "center",
             }}
             >
-              <Typography variant={"h3"} textAlign={'center'} color={"red"}>
+              <Typography variant={"h3"} textAlign={'center'} color={"#333"}>
                 No Results...
               </Typography>
             </Box>
