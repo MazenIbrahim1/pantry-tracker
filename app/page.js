@@ -16,6 +16,10 @@ export default function Home() {
   // Adding an item
   const [itemName, setItemName] = useState('')
 
+  // Filter/Search 
+  const [filter, setFilter] = useState('')
+  const filteredPantry = pantry.filter(p => p.name.toLowerCase().startsWith(filter.toLowerCase()))
+
   // Style for modal
   const style = {
     position: 'absolute',
@@ -107,6 +111,7 @@ export default function Home() {
               id="outlined-basic" 
               label="Item" 
               variant="outlined" 
+              autoComplete="off"
               fullWidth
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
@@ -124,9 +129,27 @@ export default function Home() {
           </Stack>
         </Box>
       </Modal>
-      <Button variant="contained" onClick={handleOpen}>
-        Add Item
-      </Button>
+      <Box sx={{
+        width: '800px',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'left',
+        alignItems: 'center',
+        gap: 2
+      }}>
+        <Button variant="contained" onClick={handleOpen}>
+          Add Item
+        </Button>
+        <TextField 
+          id="outlined-basic"
+          label="Filter"
+          variant="outlined"
+          fullWidth
+          autoComplete="off"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
+      </Box>
       <Box border={'1px solid #333'}>
         <Box sx={{
           width: '800px',
@@ -145,7 +168,7 @@ export default function Home() {
           </Typography>
         </Box>
         <Stack width="800px" height="300px" spacing={2} overflow={'auto'}> 
-          {pantry.map(({name, count}) => (
+          {filteredPantry.map(({name, count}) => (
             <Box
               key={name}
                 sx={{
