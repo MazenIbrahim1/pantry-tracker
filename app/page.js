@@ -13,6 +13,9 @@ export default function Home() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  // Loading state
+  const [loading, setLoading] = useState(true)
+
   // Adding an item
   const [itemName, setItemName] = useState('')
 
@@ -78,9 +81,11 @@ export default function Home() {
     
     console.log(pantryList)
     setPantry(pantryList)
+    setLoading(false)
   }
-
+  
   useEffect(() => {
+    setLoading(true)
     console.log('updating pantry')
     updatePantry()
   }, [toggle]);
@@ -209,7 +214,23 @@ export default function Home() {
           </Typography>
         </Box>
         <Stack width="800px" height="300px" spacing={2} overflow={'auto'}> 
-          {filteredPantry.map(({name, count}) => (
+          {loading ? (
+            <Box sx={{
+              width: "100%",
+              minHeight: "300px",
+              display: 'flex',
+              flexDirection: { xs: "column", md: "row"},
+              justifyContent: "center",
+              alignItems: "center",
+          }}
+          >
+            <Typography variant={"h3"} textAlign={'center'} color={"blue"}>
+              Loading...
+            </Typography>
+          </Box>
+          ) : 
+          filteredPantry.length > 0 ? 
+            filteredPantry.map(({name, count}) => (
             <Box
               key={name}
                 sx={{
@@ -237,7 +258,22 @@ export default function Home() {
                 <Button variant="contained" onClick={() => removeItem(name)}>Remove</Button>
               </Stack>
             </Box>
-          ))}
+            ))
+            : 
+            <Box sx={{
+                width: "100%",
+                minHeight: "300px",
+                display: 'flex',
+                flexDirection: { xs: "column", md: "row"},
+                justifyContent: "center",
+                alignItems: "center",
+            }}
+            >
+              <Typography variant={"h3"} textAlign={'center'} color={"red"}>
+                No Results...
+              </Typography>
+            </Box>
+          }
         </Stack>
       </Box>
     </Box>
