@@ -1,5 +1,5 @@
 "use client"
-import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Modal, Stack, TextField, Typography, ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { firestore } from "@/firebase";
 import { collection, getDocs, getDoc, query, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -16,10 +16,32 @@ export default function Home() {
   // Adding an item
   const [itemName, setItemName] = useState('')
 
-  // Filter/Search 
-  const [filter, setFilter] = useState('')
-  const filteredPantry = pantry.filter(p => p.name.toLowerCase().startsWith(filter.toLowerCase()))
+  // Search 
+  const [search, setSearch] = useState('')
+  const filteredPantry = pantry.filter(p => p.name.toLowerCase().startsWith(search.toLowerCase()))
 
+  // Filter
+  const [toggle, setToggle] = useState('name')
+
+  const filteringToggles = [
+    <ToggleButton value="name" key="name">
+      name
+    </ToggleButton>,
+    <ToggleButton value="count" key="count">
+      Quantity
+    </ToggleButton>,
+  ]
+
+  const handleToggleChange = (event, toggle) => {
+    setToggle(toggle);
+  }
+
+  const control = {
+    value: toggle,
+    onChange: handleToggleChange,
+    exclusive: true,
+  }
+  
   // Style for modal
   const style = {
     position: 'absolute',
@@ -47,6 +69,13 @@ export default function Home() {
         ...doc.data()
       })
     })
+
+    if (toggle === 'name') {
+      pantryList.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (toggle === 'count') {
+      pantryList.sort((a, b) => b.count - a.count);
+    }
+    
     console.log(pantryList)
     setPantry(pantryList)
   }
@@ -54,7 +83,7 @@ export default function Home() {
   useEffect(() => {
     console.log('updating pantry')
     updatePantry()
-  }, []);
+  }, [toggle]);
 
   // Adding an item to the pantry database
   const addItem = async (item) => {
@@ -142,13 +171,25 @@ export default function Home() {
         </Button>
         <TextField 
           id="outlined-basic"
-          label="Filter"
+          label="Search"
           variant="outlined"
           fullWidth
           autoComplete="off"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
+          <Typography 
+            variant="h10"
+            textAlign={'center'}
+            color={'#333'}
+          >
+            Filter by: 
+          </Typography>
+        <Stack alignItems="center">
+        <ToggleButtonGroup size="large" {...control} aria-label="Large sizes">
+          {filteringToggles}
+        </ToggleButtonGroup>
+      </Stack>
       </Box>
       <Box border={'1px solid #333'}>
         <Box sx={{
