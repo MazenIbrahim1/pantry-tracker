@@ -218,7 +218,7 @@ export default function Home() {
         </ToggleButtonGroup>
       </Stack>
       </Box>
-      <Box border={'1px solid #333'} borderRadius="50px" height='63vh'>
+      <Box border={'1px solid #333'} borderRadius="50px" height="55vh">
         <Box sx={{
           borderRadius: "50px",
           width: '800px',
@@ -237,7 +237,7 @@ export default function Home() {
             Pantry Items
           </Typography>
         </Box>
-        <Stack width="800px" height="300px" spacing={2} overflow={'auto'} alignItems='center'> 
+        <Stack width="800px" height="43vh" spacing={2} overflow={'auto'} alignItems='center'> 
           {loading ? (
             <Box sx={{
               width: "100%",
@@ -301,6 +301,9 @@ export default function Home() {
           }
         </Stack>
       </Box>
+      <Typography variant={"h4"} textAlign={'center'} color={"#333"} paddingY={2}>
+        Number of items: {filteredPantry.length}
+      </Typography>
     </Box>
   );
 }
