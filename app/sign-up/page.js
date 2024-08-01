@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import { auth } from "@/firebase";
-import { Container, TextField, Button, Typography, Box } from '@mui/material';
-import { useRouter } from 'next/navigation'
+import { TextField, Button, Typography, Box } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import Header from '../components/header';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -27,44 +28,61 @@ export default function Signup() {
   };
 
   return (
-    <Container maxWidth="sm">
+    <>
+      <Header />
       <Box
         display="flex"
         flexDirection="column"
         justifyContent="center"
         alignItems="center"
+        width="100vw"
         minHeight="100vh"
+        bgcolor="#e5eaf5"
+        gap={1.5}
       >
-        <Typography variant="h4" component="h1" gutterBottom>
-          Sign Up
+        <Typography variant="h2" textAlign="center" color="#333" margin={4}>
+          Thanks for choosing Pantry Nest!
         </Typography>
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          <TextField
-            label="Email"
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <TextField
-            label="Password"
-            variant="outlined"
-            margin="normal"
-            type="password"
-            fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Box marginTop={2}>
-            <Button type="submit" variant="contained" color="primary" fullWidth>
-              Sign Up
-            </Button>
-          </Box>
-        </form>
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          width="50vw"
+          border="1px solid #333"
+          padding={2}
+        >
+          <Typography variant="h4" component="h1" gutterBottom>
+            Sign Up
+          </Typography>
+          <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+            <TextField
+              label="Email"
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <TextField
+              label="Password"
+              variant="outlined"
+              margin="normal"
+              type="password"
+              fullWidth
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <Box marginTop={2}>
+              <Button type="submit" variant="contained" color="primary" fullWidth>
+                Sign Up
+              </Button>
+            </Box>
+          </form>
+        </Box>
       </Box>
-    </Container>
+    </>
   );
 }
