@@ -1,13 +1,26 @@
 "use client"
 import { Box, Button, Modal, Stack, TextField, Typography, ToggleButtonGroup, ToggleButton, InputAdornment } from "@mui/material";
 import { firestore } from "@/firebase";
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/firebase';
+import { signOut } from 'firebase/auth';
 import { collection, getDocs, getDoc, query, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 
 export default function Home() {
+  // User
+  const [user] = useAuthState(auth)
+  const router = useRouter()
+  const userSession = sessionStorage.getItem('user')
+
+  if(!user && !userSession) {
+    router.push('/sign-in')
+  }
+
   // Pantry list
   const [pantry, setPantry] = useState([])
 
@@ -68,7 +81,11 @@ export default function Home() {
 
   // Get the pantry data
   const updatePantry = async () => {
-    const snapshot = query(collection(firestore, 'pantry')) 
+    if(!user) {
+      return
+    }
+    const userId = user.uid;
+    const snapshot = query(collection(firestore, 'users', userId, 'pantry'))
     const docs = await getDocs(snapshot)
     const pantryList = []
     docs.forEach(doc => {
@@ -90,15 +107,19 @@ export default function Home() {
   }
   
   useEffect(() => {
+    if(!user) {
+      router.push('/sign-in')
+    }
     setLoading(true)
     console.log('updating pantry')
     updatePantry()
-  }, [toggle]);
+  }, [toggle, user]);
 
   // Adding an item to the pantry database
   const addItem = async (item, count) => {
     console.log('Adding item: ', item)
-    const docRef = doc(collection(firestore, 'pantry'), item)
+    const userId = user.uid;
+    const docRef = doc(collection(firestore, 'users', userId, 'pantry'), item)
     // Check if it exists
     const docSnap = await getDoc(docRef)
     if(docSnap.exists()) {
@@ -113,7 +134,8 @@ export default function Home() {
   // Removing an item from the database
   const removeItem = async (item) => {
     console.log('Removing: ', item)
-    const docRef = doc(collection(firestore, 'pantry'), item)
+    const userId = user.uid;
+    const docRef = doc(collection(firestore, 'users', userId, 'pantry'), item)
     // Check if it exists
     const docSnap = await getDoc(docRef)
     if(docSnap.exists()) {
@@ -218,10 +240,10 @@ export default function Home() {
         </ToggleButtonGroup>
       </Stack>
       </Box>
-      <Box border={'1px solid #333'} borderRadius="50px" height="55vh">
+      <Box border={'1px solid #333'} borderRadius="50px" height="56vh">
         <Box sx={{
           borderRadius: "50px",
-          width: '800px',
+          width: '810px',
           height: '100px',
           bgcolor: '#add8e6',
           display: 'flex',
@@ -237,7 +259,7 @@ export default function Home() {
             Pantry Items
           </Typography>
         </Box>
-        <Stack width="800px" height="43vh" spacing={2} overflow={'auto'} alignItems='center'> 
+        <Stack width="800px" height="42vh" spacing={2} overflow={'auto'} alignItems='center'> 
           {loading ? (
             <Box sx={{
               width: "100%",
@@ -304,6 +326,11 @@ export default function Home() {
       <Typography variant={"h4"} textAlign={'center'} color={"#333"} paddingY={2}>
         Number of items: {filteredPantry.length}
       </Typography>
+      <Button variant="contained" onClick={
+        () => {
+          signOut(auth)
+          sessionStorage.removeItem('user')
+      }} >Logout</Button>
     </Box>
   );
 }
