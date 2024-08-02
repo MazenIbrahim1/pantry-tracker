@@ -9,6 +9,7 @@ import Header from "../components/header";
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('')
 
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
 
@@ -25,6 +26,10 @@ export default function SignIn() {
         router.push('/dashboard')
     } catch(e) {
         console.log(e)
+        setError('Incorrect Email or Password')
+        setTimeout(() => {
+          setError('')
+        }, 2000)
     }
   };
 
@@ -77,6 +82,9 @@ export default function SignIn() {
               <Button type="submit" variant="contained" color="primary" fullWidth>
                 Sign In
               </Button>
+              <Typography variant="h4" component="h1" gutterBottom>
+                {error}
+              </Typography>
             </Box>
           </form>
             <Box marginTop={2} width='100%' display='flex' flexDirection='row' alignItems='center' justifyContent='center' gap={3}>

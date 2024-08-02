@@ -1,8 +1,7 @@
 "use client"
 import { Box, Button, Typography } from "@mui/material";
 import { useRouter } from 'next/navigation';
-import LoginIcon from '@mui/icons-material/Login';
-import StraightIcon from '@mui/icons-material/Straight';
+import { Login, Straight } from "@mui/icons-material";
 import Header from "./components/header";
 
 export default function Home() {
@@ -30,22 +29,22 @@ export default function Home() {
           Easily add, remove, and manage your pantry items, and never run out of your essentials again!
         </Typography>
         <Box display="flex" flexDirection="row" gap={2}>
-        <Button
-          variant="contained" 
-          color="primary" 
-          onClick={() => router.push('/sign-in')}
-          startIcon={<LoginIcon />}
-        >
-          Sign In
-        </Button>
-        <Button
-          variant="contained" 
-          color="primary" 
-          onClick={() => router.push('/sign-up')}
-          startIcon={<StraightIcon />}
-        >
-          Sign Up
-        </Button>
+          <Button
+            variant="contained" 
+            color="primary" 
+            onClick={() => router.push('/sign-in')}
+            startIcon={<Login />}
+          >
+            Sign In
+          </Button>
+          <Button
+            variant="contained" 
+            color="primary" 
+            onClick={() => router.push('/sign-up')}
+            startIcon={<Straight />}
+          >
+            Sign Up
+          </Button>
         </Box>
       </Box>
     </>
