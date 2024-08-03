@@ -5,6 +5,7 @@ import { auth } from "@/firebase";
 import { TextField, Button, Typography, Box } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import Header from '../components/header';
+import { Login } from '@mui/icons-material';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -29,7 +30,11 @@ export default function Signup() {
 
   return (
     <>
-      <Header />
+      <Header Button={<Button variant="contained" onClick={
+          () => {
+            router.push('/sign-in')
+        }} startIcon={<Login />}>Sign in</Button>
+      }/>
       <Box
         display="flex"
         flexDirection="column"

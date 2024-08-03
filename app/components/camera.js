@@ -2,7 +2,6 @@
 import React, { useRef, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { Camera } from "react-camera-pro";
-import { Image, PhotoCamera} from "@mui/icons-material";
 
 export default function CameraView() {
   const camera = useRef(null)

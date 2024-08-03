@@ -8,18 +8,20 @@ import { collection, getDocs, getDoc, query, doc, setDoc, deleteDoc } from "fire
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import Header from "../components/header";
+import Recipe from "../components/recipe";
 import { Camera } from "react-camera-pro";
-import CameraView from "../components/camera";
 import { Logout, Add, Delete, Search, Image, PhotoCamera } from "@mui/icons-material";
 
 export default function Dashboard() {
   // User
   const [user] = useAuthState(auth)
   const router = useRouter()
-  const userSession = sessionStorage.getItem('user')
 
-  if(!user && !userSession) {
-    router.push('/sign-in')
+  if (typeof window !== 'undefined') {
+    const userSession = sessionStorage.getItem('user')
+    if(!user && !userSession) {
+      router.push('/sign-in')
+    }
   }
 
   // User Pantry list
@@ -105,7 +107,7 @@ export default function Dashboard() {
     display: 'flex',
     flexDirection: 'column',
     gap: 2
-  };
+  }
 
   // Get the pantry data
   const updatePantry = async () => {
@@ -194,6 +196,7 @@ export default function Dashboard() {
         justifyContent="center"
         alignItems="center"
         bgcolor="#e5eaf5"
+        overflow='auto'
         gap={1.5}
       >
         <Modal 
@@ -441,6 +444,7 @@ export default function Dashboard() {
         <Typography variant={"h4"} textAlign={'center'} color={"#333"} paddingY={2}>
           Number of items: {filteredPantry.length}
         </Typography>
+        <Recipe list={filteredPantry}/>
       </Box>
     </>
   );
