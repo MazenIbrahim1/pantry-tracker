@@ -3,6 +3,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useRouter } from 'next/navigation';
 import { Login, Straight } from "@mui/icons-material";
 import Header from "./components/header";
+import { Analytics } from '@vercel/analytics/react';
 
 export default function Home() {
   const router = useRouter()
@@ -46,6 +47,7 @@ export default function Home() {
             Sign Up
           </Button>
         </Box>
+        <Analytics />
       </Box>
     </>
   );
