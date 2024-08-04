@@ -19,14 +19,18 @@ export default function SignIn() {
     event.preventDefault();
     try {
         const res = await signInWithEmailAndPassword(email, password)
-        console.log({res})
-        sessionStorage.setItem('user', true)
-        setEmail('')
-        setPassword('')
-        router.push('/dashboard')
+        if (res?.user) {
+          sessionStorage.setItem('user', true);
+          console.log({res})
+          setEmail('');
+          setPassword('');
+          router.push('/dashboard');
+        } else {
+          throw new Error('Authentication failed!');
+        }        
     } catch(e) {
         console.log(e)
-        setError('Incorrect Email or Password')
+        setError('*Incorrect Email or Password*')
         setTimeout(() => {
           setError('')
         }, 2000)
@@ -78,13 +82,13 @@ export default function SignIn() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+              <Typography variant="h7" color='red'>
+                {error}
+              </Typography>
             <Box marginTop={2}>
               <Button type="submit" variant="contained" color="primary" fullWidth>
                 Sign In
               </Button>
-              <Typography variant="h4" component="h1" gutterBottom>
-                {error}
-              </Typography>
             </Box>
           </form>
             <Box marginTop={2} width='100%' display='flex' flexDirection='row' alignItems='center' justifyContent='center' gap={3}>

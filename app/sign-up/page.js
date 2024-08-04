@@ -8,23 +8,31 @@ import Header from '../components/header';
 import { Login } from '@mui/icons-material';
 
 export default function Signup() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
   const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth)
   const router = useRouter()
 
   const handleSubmit = async () => {
-    event.preventDefault();
+    event.preventDefault()
     try {
         const res = await createUserWithEmailAndPassword(email, password)
-        console.log({res})
-        sessionStorage.setItem('user', true)
-        router.push('/sign-in')
-        setEmail('')
-        setPassword('')
+        if (res?.user) {
+          console.log({res})
+          sessionStorage.setItem('user', true)
+          router.push('/sign-in')
+          setEmail('')
+          setPassword('')
+        } else {
+          throw new Error('Authentication failed!');
+        }        
     } catch(e) {
-        console.log(e)
+        setError("*Something went wrong*")
+        setTimeout(() => {
+          setError('')
+        }, 2000)
     }
   };
 
@@ -80,6 +88,9 @@ export default function Signup() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <Typography variant="h7" color='red'>
+              {error}
+            </Typography>
             <Box marginTop={2}>
               <Button type="submit" variant="contained" color="primary" fullWidth>
                 Sign Up
