@@ -4,7 +4,8 @@
 https://pantrynest.vercel.app/
 
 ## Description
-This project is a pantry management application that allows users to keep track of pantry items by adding or removing items and updating their quantities. 
+This project is a pantry management application that allows users to keep track of pantry items by adding or removing items and updating their quantities. The project also has an AI Recipe Generator using OpenAI API.  
+I am currently working on classifying images using AI and automatically adding them to the database after the classification of the image input and the consent of the user.
 
 ## Tech Stack
  - Frontend
