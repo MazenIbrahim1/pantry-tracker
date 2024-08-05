@@ -9,14 +9,14 @@ This project is a pantry management application that allows users to keep track 
 ## Tech Stack
 Frontend
  - Next.js
- - Material UI
-Backend
+ - Material UI  
+ Backend
  - Firbase
  - Authentication
-    - Firebase Auth
+    - Firebase Auth  
 Database
- - Firestore
-Deployment
+ - Firestore  
+ Deployment
  - Frontend --> Vercel
  - Backend  --> Firebase
  - Database --> Firebase
