@@ -7,19 +7,19 @@ https://pantrynest.vercel.app/
 This project is a pantry management application that allows users to keep track of pantry items by adding or removing items and updating their quantities. 
 
 ## Tech Stack
-Frontend
- - Next.js
- - Material UI  
- Backend
- - Firbase
- - Authentication
-    - Firebase Auth  
-Database
- - Firestore  
- Deployment
- - Frontend --> Vercel
- - Backend  --> Firebase
- - Database --> Firebase
+ - Frontend
+    - Next.js
+    - Material UI  
+ - Backend
+    - Firbase
+    - Authentication
+        - Firebase Auth  
+ - Database
+    - Firestore  
+ - Deployment
+    - Frontend --> Vercel
+    - Backend  --> Firebase
+    - Database --> Firebase
 
 ## Getting Started
 
