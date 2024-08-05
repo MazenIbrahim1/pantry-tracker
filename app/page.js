@@ -28,6 +28,7 @@ export default function Home() {
         <Typography variant="h6" textAlign="center" color="#666" maxWidth="600px">
           Pantry Nest helps you keep track of the items in your pantry. 
           Easily add, remove, and manage your pantry items, and never run out of your essentials again!
+          There is also an AI Recipe Generator based on your current pantry list!
         </Typography>
         <Box display="flex" flexDirection="row" gap={2}>
           <Button
