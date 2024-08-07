@@ -22,7 +22,7 @@ export default function Signup() {
         if (res?.user) {
           console.log({res})
           sessionStorage.setItem('user', true)
-          router.push('/sign-in')
+          router.push('/dashboard')
           setEmail('')
           setPassword('')
         } else {
