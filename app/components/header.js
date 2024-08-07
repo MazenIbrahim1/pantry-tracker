@@ -10,6 +10,8 @@ const Header = (props) => {
 
   return (
     <AppBar style={{
+        width: '100vw',
+        position: 'sticky',
         backgroundColor: 'lightblue'
     }}>
       <Toolbar>

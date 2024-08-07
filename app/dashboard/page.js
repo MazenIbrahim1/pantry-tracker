@@ -10,7 +10,8 @@ import { useRouter } from 'next/navigation';
 import Header from "../components/header";
 import Recipe from "../components/recipe";
 import { Camera } from "react-camera-pro";
-import { Logout, Add, Delete, Search, Image, PhotoCamera } from "@mui/icons-material";
+import { Logout, Add, Delete, Search, Image, PhotoCamera, Remove } from "@mui/icons-material";
+import Classification from "../components/classification";
 
 export default function Dashboard() {
   // User
@@ -36,6 +37,8 @@ export default function Dashboard() {
   const camera = useRef(null)
   const [image, setImage] = useState(null)
   const [cameraActive, setCameraActive] = useState(false)
+  const [classification, setClassification] = useState([])
+  const [showClass, setShowClass] = useState(false)
 
   const handleImageChange = (e) => {
     const pic = e.target.files[0]
@@ -56,6 +59,54 @@ export default function Dashboard() {
 
   const handleUploadClick = () => {
     document.getElementById("fileInput").click()
+  }
+
+  const handleClassification = async () => {
+    try {
+      console.log('Starting classification...');
+      const response = await fetch(image);
+      const blob = await response.blob();
+      console.log('Blob received, reading...');
+
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+
+      const base64 = await new Promise((resolve, reject) => {
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = error => reject(error);
+      });
+
+      console.log('Image converted to Base64, sending to API...');
+      const apiResponse = await fetch('/api/classifyImage', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ image: base64.split(',')[1] })
+      });
+
+      if (!apiResponse.ok) {
+          console.log('File too large')
+          throw new Error('API response was not ok.');
+      }
+
+      const data = await apiResponse.json();
+      console.log('Classification result:', data);
+      const classList = []
+      data.forEach(d => {
+        classList.push({
+          description: d.description,
+          confidence: d.score * 100
+        })
+      })
+      setClassification(classList)
+
+    } catch (error) {
+        console.error('Error during classification:', error);
+    } finally {
+        setShowClass(true)
+        console.log("Done classifying");
+    }
   }
 
   // Loading state
@@ -98,7 +149,7 @@ export default function Dashboard() {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 480,
+    width: '40vw',
     bgcolor: 'background.paper',
     border: '2px solid #333',
     borderRadius: '8px',
@@ -106,6 +157,8 @@ export default function Dashboard() {
     p: 4,
     display: 'flex',
     flexDirection: 'column',
+    overflow: 'auto',
+    maxHeight: '80vh',
     gap: 2
   }
 
@@ -179,6 +232,16 @@ export default function Dashboard() {
     await updatePantry()
   }
 
+  const deleteItem = async (item) => {
+    console.log('Deleting: ', item)
+    const userId = user.uid;
+    const docRef = doc(collection(firestore, 'users', userId, 'pantry'), item)
+    // Check if it exists
+    const docSnap = await getDoc(docRef)
+    await deleteDoc(docRef)
+    await updatePantry()
+  }
+
   return (
     <>
       <Header Button={
@@ -196,7 +259,7 @@ export default function Dashboard() {
         justifyContent="center"
         alignItems="center"
         bgcolor="#e5eaf5"
-        overflow='auto'
+        overflow='hidden'
         gap={1.5}
       >
         <Modal 
@@ -297,29 +360,37 @@ export default function Dashboard() {
                     <Typography variant="h6" color="#333">
                       Image Preview:
                     </Typography>
-                    <img src={image} alt="Captured" style={{ maxHeight: "400px", maxWidth: "400px"}} />
-                    <Box display='flex' alignItems='center' justifyContent='center' gap={2}>
+                    <img src={image} alt="Captured" style={{ height: "auto", maxWidth: "100%"}} />
+                    <Box display='flex' alignItems='center' justifyContent='center' gap={2} margin={2}>
                       <Button 
                         variant="contained" 
-                        onClick={ () => {
-                          console.log("uploaded picture added")
-                        }}
+                        onClick={handleClassification}
                       >
-                        Add
+                        Classify using AI
                       </Button>
                       <Button 
                         variant="contained" 
-                        onClick={ () => setImage(null)}
+                        onClick={ () => {
+                          setImage(null)
+                          setShowClass(false)
+                        }}
                       >
                         Remove
                       </Button>
                     </Box>
+                    {showClass ? 
+                      <Classification Classification={classification} user={user}/>
+                      :
+                      <Typography variant="h6">
+                        Try Classifying!
+                      </Typography>
+                    }
                   </Box>
                 )}
           </Box>
         </Modal>
         <Box sx={{
-          width: '900px',
+          width: '50vw',
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'left',
@@ -358,11 +429,11 @@ export default function Dashboard() {
           </ToggleButtonGroup>
         </Stack>
         </Box>
-        <Box border={'1px solid #333'} borderRadius="50px" height="56vh">
+        <Box border={'1px solid #333'} borderRadius="50px" height="60vh">
           <Box sx={{
             borderRadius: "50px",
-            width: '910px',
-            height: '100px',
+            width: '52vw',
+            height: '12vh',
             bgcolor: '#add8e6',
             display: 'flex',
             justifyContent: 'center',
@@ -377,7 +448,7 @@ export default function Dashboard() {
               Pantry Items
             </Typography>
           </Box>
-          <Stack width="900px" height="42vh" spacing={2} overflow={'auto'} alignItems='center'> 
+          <Stack width="52vw" height="42vh" spacing={2} overflow={'auto'} alignItems='center'> 
             {loading ? (
               <Box sx={{
                 width: "100%",
@@ -418,10 +489,11 @@ export default function Dashboard() {
                   <Typography variant={"h4"} color={'#333'} textAlign={'center'} fontFamily='Courier New, Courier, monospace' fontWeight='bold'>
                     Quantity: {count}
                   </Typography>
-                <Stack direction="row" spacing={1.5}>
-                  <Button variant="contained" onClick={() => addItem(name, 1)} startIcon={<Add />} >Add</Button>
-                  <Button variant="contained" onClick={() => removeItem(name)} startIcon={<Delete />}>Remove</Button>
+                <Stack display='flex' flexDirection="column" spacing={1}>
+                  <Button variant="contained" onClick={() => addItem(name, 1)}> <Add /> </Button>
+                  <Button variant="contained" onClick={() => removeItem(name)}> <Remove /> </Button>
                 </Stack>
+                <Button variant="contained" onClick={() => deleteItem(name)} startIcon={<Delete />}>Delete</Button>
               </Box>
               ))
               : 

@@ -102,7 +102,7 @@ const Recipe = (props) => {
                                 paddingX: 4
                               }}
                           >
-                            <Typography variant="h5">
+                            <Typography variant="h5" padding={2}>
                                 {recipeName === "Instructions" ? recipeName + ': ' + details : recipeName}
                             </Typography>
                           </Box>
