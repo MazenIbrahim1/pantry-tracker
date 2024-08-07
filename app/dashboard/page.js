@@ -268,7 +268,7 @@ export default function Dashboard() {
         >
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              Add Item
+              Add Item Manually
             </Typography>
             <Stack width='100%' direction={'row'} spacing={2} justifyContent='center'>
               <TextField 
@@ -297,11 +297,11 @@ export default function Dashboard() {
                   handleClose()
                 }}
               >
-                Add
+                Add 
               </Button>
             </Stack>
               <Typography variant="h6" justifyContent='center'>
-                Upload or Capture Image
+                OR Use AI Classification
               </Typography>
               <Box display="flex" flexDirection="row" justifyContent='center' gap={2}>
                 <Button
