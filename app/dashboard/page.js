@@ -487,7 +487,7 @@ export default function Dashboard() {
                     }
                   </Typography>
                   <Typography variant={"h4"} color={'#333'} textAlign={'center'} fontFamily='Courier New, Courier, monospace' fontWeight='bold'>
-                    Quantity: {count}
+                    {count}
                   </Typography>
                 <Stack display='flex' flexDirection="column" spacing={1}>
                   <Button variant="contained" onClick={() => addItem(name, 1)}> <Add /> </Button>
