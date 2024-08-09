@@ -15,7 +15,12 @@ export default async function classifyImage(req, res) {
 
     try {
         const client = new ImageAnnotatorClient({
-            keyFilename: 'pages/api/APIKEY.json'
+            credentials: {
+                type: 'service_account',
+                project_id: process.env.GCLOUD_PROJECT_ID,
+                private_key: process.env.GCLOUD_PRIVATE_KEY.replace(/\\n/g, '\n'),
+                client_email: process.env.GCLOUD_CLIENT_EMAIL,
+            }
         })
         const imageBuffer = Buffer.from(image, 'base64')
         const [result] = await client.labelDetection({
